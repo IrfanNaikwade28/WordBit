@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="{% static 'img/icon.png' %}">
+  <title>WordBit</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
+  <img style="width: 200px; height:auto" src="{% static 'img/logo.png'%}" alt="">
+
+  <div class="menu">
+    <button class="menu-btn" type="button" onclick="toggleMenu()">⋮</button>
+
+    <div id="menuDropdown" class="menu-dropdown">
+
+      <button type="button" onclick="openHowTo()">
+        📖 How to play
+      </button>
+
+      <form method="post">
+        {% csrf_token %}
+        <button
+          type="submit"
+          name="action"
+          value="hint"
+          {% if hints|length >= max_hints or given_up or "found the word" in message %}disabled{% endif %}
+        >
+          💡 Hint ({{ hints|length }}/{{ max_hints }})
+        </button>
+      </form>
+
+      <form method="post">
+        {% csrf_token %}
+        <button
+          type="submit"
+          name="action"
+          value="giveup"
+          {% if given_up or "found the word" in message %}disabled{% endif %}
+        >
+          🚩 Give up
+        </button>
+      </form>
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="play_again">
+          🔄 New Game
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="container">
+
+  <p class="meta">Guesses: {{ count }}</p>
+
+  <!-- GUESS FORM -->
+  <form method="post" class="guess-form">
+    {% csrf_token %}
+    <input
+      type="text"
+      name="word"
+      placeholder="type a word"
+      autocomplete="off"
+      {% if given_up or "found the word" in message %}disabled{% endif %}
+    >
+    <button
+      type="submit"
+      name="action"
+      value="guess"
+      {% if given_up or "found the word" in message %}disabled{% endif %}
+    >
+      Guess
+    </button>
+  </form>
+
+  <!-- MESSAGE -->
+  {% if message %}
+    <div class="message">{{ message }}</div>
+  {% endif %}
+
+  <!-- WIN BOX -->
+  {% if message and "found the word" in message %}
+    <div class="win-box">
+      <h2>🎉 Congratulations!</h2>
+      <p>{{ message }}</p>
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="play_again" class="play-again">
+          🔄 Play Again
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
+  <!-- HINTS -->
+  {% if hints %}
+    <div class="hint-box">
+      <h3>Hints</h3>
+      {% for word, rank in hints %}
+        <p>{{ word }} → <strong>{{ rank }}</strong></p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- GIVE UP -->
+  {% if given_up %}
+    <div class="giveup-box">
+      <h2>Secret word</h2>
+      <span>{{ secret }}</span>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="action" value="play_again" class="play-again" style="background-color:green">
+          🔄 Play Again
+        </button>
+      </form>
+    </div>
+  {% endif %}
+
+  <!-- GUESSES -->
+  {% if guesses %}
+    <div class="guesses">
+      <h3>Your guesses</h3>
+      {% for word, rank in guesses %}
+        <div class="guess-row">
+          <span>{{ word }}</span>
+          <span class="rank">{{ rank }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>
+
+<!-- ================= HOW TO PLAY MODAL ================= -->
+<div id="howToModal" class="modal">
+  <div class="modal-content">
+    <h2>📖 How to Play</h2>
+
+    <p>
+      Find the <strong>secret word</strong>.
+      Each guess is ranked by meaning similarity.
+    </p>
+
+    <ul>
+      <li><strong>Rank 1</strong> → secret word</li>
+      <li>Lower rank → closer meaning</li>
+      <li>Higher rank → farther meaning</li>
+    </ul>
+
+    <p>
+      You get <strong>{{ max_hints }}</strong> hints.
+      Hints get stronger each time.
+    </p>
+
+    <button type="button" onclick="closeHowTo()">Got it</button>
+  </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+function toggleMenu() {
+  document.getElementById("menuDropdown").classList.toggle("show");
+}
+
+function openHowTo() {
+  document.getElementById("howToModal").style.display = "flex";
+  document.getElementById("menuDropdown").classList.remove("show");
+}
+
+function closeHowTo() {
+  document.getElementById("howToModal").style.display = "none";
+}
+
+window.onclick = function(e) {
+  if (e.target.classList.contains("modal")) {
+    closeHowTo();
+  }
+};
+</script>
+
+</body>
+</html>

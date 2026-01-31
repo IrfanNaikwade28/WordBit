@@ -1,0 +1,73 @@
+# --------------------
+# Python
+# --------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --------------------
+# Django
+# --------------------
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+
+# --------------------
+# Virtual Environment
+# --------------------
+env/
+venv/
+ENV/
+.venv/
+
+# --------------------
+# Environment variables
+# --------------------
+.env
+.env.*
+
+# --------------------
+# Static files (collected)
+# --------------------
+staticfiles/
+
+# --------------------
+# IDE / Editor
+# --------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --------------------
+# OS files
+# --------------------
+.DS_Store
+Thumbs.db
+
+# --------------------
+# Jupyter / misc
+# --------------------
+.ipynb_checkpoints/
+
+# --------------------
+# Node (if ever used)
+# --------------------
+node_modules/
+npm-debug.log*
+
+# --------------------
+# Coverage / testing
+# --------------------
+.coverage
+htmlcov/
+.pytest_cache/
+
+# --------------------
+# Build / distribution
+# --------------------
+build/
+dist/
+*.egg-info/
