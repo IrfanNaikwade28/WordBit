@@ -1,48 +1,70 @@
-🎯 WordBit
-WordBit is a Contexto‑style word guessing game built with Django + NLP.
-Players try to guess a secret word, and each guess is ranked by how close in meaning it is to the secret word using word embeddings.
+# 🎯 WordBit
 
-🚀 Features
-🔤 Guess words and get semantic rank feedback
+> A Contexto-style semantic word guessing game built with **Django** and **NLP**.
 
-🧠 NLP‑based similarity using GloVe embeddings
+WordBit challenges players to guess a hidden word.  
+Each guess is ranked based on **semantic similarity** to the secret word using **word embeddings**, not keyword matching.
 
-💡 Progressive hints (3 levels: weak → strong)
+---
 
-🚩 Give up option to reveal the secret word
+## 📌 Overview
 
-🔄 New Game / Play Again with a fresh secret word
+Unlike traditional word games, WordBit measures how *close in meaning* a guessed word is to the secret word.  
+The game uses **vector embeddings** and **cosine similarity** to generate accurate semantic rankings.
 
-📖 Built‑in How to Play guide
+---
 
-🎨 Clean, modern UI (Contexto‑inspired)
+## 🚀 Features
 
-⚡ Rankings built once per game (optimized)
+- 🔤 Semantic word guessing with ranked feedback
+- 🧠 NLP-based similarity using **GloVe embeddings**
+- 💡 Progressive hint system (3 levels: weak → strong)
+- 🚩 Give-up option to reveal the secret word
+- 🔄 New Game / Play Again functionality
+- 📖 Built-in *How to Play* guide
+- 🎨 Clean, modern UI inspired by *Contexto*
+- ⚡ Rankings computed once per game (performance optimized)
 
-🕹️ How to Play
-Enter a word and submit your guess
+---
 
-You’ll receive a rank:
+## 🕹️ How to Play
 
-Rank 1 → 🎉 You found the secret word
+1. Enter a word and submit your guess  
+2. The game returns a **rank** based on semantic similarity  
 
-Lower rank → closer in meaning
+### Rank Interpretation
 
-Higher rank → farther in meaning
+| Rank | Meaning |
+|----|--------|
+| **1** | 🎉 Correct word |
+| Lower | Closer in meaning |
+| Higher | Farther in meaning |
 
-Use up to 3 hints if you’re stuck
+3. Use up to **3 hints** if needed  
+4. Give up anytime to reveal the secret word  
+5. Start a **New Game** to play again  
 
-Give up anytime to reveal the word
+---
 
-Start a New Game to play again
+## 🛠️ Tech Stack
 
-🛠️ Tech Stack
-Backend: Django
+### Backend
+- **Django**
 
-NLP: Gensim, GloVe (glove-wiki-gigaword-50)
+### NLP & Data
+- **Gensim**
+- **GloVe** (`glove-wiki-gigaword-50`)
+- **wordfreq** (frequency-based vocabulary filtering)
 
-Word Frequency: wordfreq
+### Frontend
+- HTML  
+- CSS  
+- Vanilla JavaScript  
 
-Frontend: HTML, CSS, Vanilla JS
+### State Management
+- Django Sessions
 
-Session Management: Django sessions
+---
+
+## ⚙️ Architecture
+
