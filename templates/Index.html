@@ -18,7 +18,6 @@
     <button class="menu-btn" type="button" onclick="toggleMenu()">⋮</button>
 
     <div id="menuDropdown" class="menu-dropdown">
-
       <button type="button" onclick="openHowTo()">
         📖 How to play
       </button>
@@ -132,10 +131,22 @@
     <div class="guesses">
       <h3>Your guesses</h3>
       {% for word, rank in guesses %}
-        <div class="guess-row">
-          <span>{{ word }}</span>
-          <span class="rank">{{ rank }}</span>
-        </div>
+          {% if rank <= 20  %}
+            <div style="background-color:green" class="guess-row">
+              <span>{{ word }}</span>
+              <span class="rank">{{rank}}</span>        
+            </div>
+          {% elif rank <= 100 %}
+            <div style="background-color:#FFFF5C" class="guess-row">
+              <span>{{ word }}</span>
+              <span class="rank">{{rank}}</span>        
+            </div>
+          {% else %}
+            <div style="background-color:#E34234" class="guess-row">
+              <span>{{ word }}</span>
+              <span class="rank">{{rank}}</span>        
+            </div>
+          {% endif %}  
       {% endfor %}
     </div>
   {% endif %}

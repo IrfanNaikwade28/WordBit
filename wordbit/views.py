@@ -33,6 +33,7 @@ def home(request):
     # LOAD STATE
     # ==========================
     secret = request.session["secret"]
+    print(secret)
     RANKINGS = request.session["rankings"]
     guesses = request.session["guesses"]
     hints = request.session["hints"]
@@ -59,7 +60,7 @@ def home(request):
 
         elif action == "hint" and not given_up:
             if len(hints) < MAX_HINTS:
-                hint_ranges = [(300, 500), (100, 299), (11, 99)]
+                hint_ranges = [(300, 600), (80, 200), (11, 50),]
                 low, high = hint_ranges[len(hints)]
                 for w, r in sorted(RANKINGS.items(), key=lambda x: x[1]):
                     if w not in guesses and w not in [h[0] for h in hints] and low <= r <= high:
