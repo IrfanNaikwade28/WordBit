@@ -3,47 +3,40 @@ from scipy.spatial.distance import cosine
 import gensim.downloader as api
 from wordfreq import top_n_list
 
-# ==============================
-# LOAD MODEL (ONCE)
-# ==============================
 MODEL_NAME = "glove-wiki-gigaword-50"
-print("Loading GloVe model...")
-model = api.load(MODEL_NAME)
-print("GloVe model loaded")
 
-# ==============================
-# LOAD COMMON WORDS (ONCE)
-# ==============================
+model = None  # global cache
+
 NUM_COMMON_WORDS = 30000
 COMMON_WORDS = top_n_list("en", NUM_COMMON_WORDS)
 
-# ==============================
-# SIMILARITY
-# ==============================
-def similarity(w1, w2):
-    return 1 - cosine(model[w1], model[w2])
 
-# ==============================
-# SECRET WORD GENERATOR
-# ==============================
+def get_model():
+    global model
+    if model is None:
+        print("Loading GloVe model...")
+        model = api.load(MODEL_NAME)
+        print("GloVe model loaded")
+    return model
+
+
+def similarity(w1, w2):
+    m = get_model()
+    return 1 - cosine(m[w1], m[w2])
+
+
 def generate_secret_word():
-    """
-    Choose a reasonable secret word:
-    - common
-    - exists in model
-    - not too trivial
-    """
-    candidates = [w for w in COMMON_WORDS if w in model]
+    m = get_model()
+    candidates = [w for w in COMMON_WORDS if w in m]
     return random.choice(candidates[100:5000])
 
-# ==============================
-# BUILD RANKINGS
-# ==============================
+
 def build_rankings(secret_word):
+    m = get_model()
     scores = []
 
     for word in COMMON_WORDS:
-        if word in model:
+        if word in m:
             score = similarity(secret_word, word)
             scores.append((word, score))
 
