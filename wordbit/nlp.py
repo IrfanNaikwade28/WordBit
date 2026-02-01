@@ -1,18 +1,30 @@
 import random
+from pathlib import Path
 from scipy.spatial.distance import cosine
-import gensim.downloader as api
+from gensim.models import KeyedVectors
 from wordfreq import top_n_list
 
-MODEL_NAME = "glove-wiki-gigaword-50"
-model = None
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+MODEL_PATH = (
+    BASE_DIR
+    / "models"
+    / "gensim-data"
+    / "glove-wiki-gigaword-50"
+    / "glove-wiki-gigaword-50.txt"
+)
+
+model = None
 COMMON_WORDS = top_n_list("en", 30000)
 
 def load_model():
     global model
     if model is None:
-        print("Loading GloVe model (once per worker)...")
-        model = api.load(MODEL_NAME)
+        print("Loading GloVe model from local disk...")
+        model = KeyedVectors.load_word2vec_format(
+            MODEL_PATH,
+            binary=False
+        )
         print("Model loaded")
 
 def similarity(w1, w2):
@@ -25,10 +37,6 @@ def generate_secret_word():
     return random.choice(candidates[100:5000])
 
 def get_rank(secret, guess):
-    """
-    Estimate rank by comparing similarity against random samples
-    (fast + good enough)
-    """
     load_model()
 
     if guess not in model or secret not in model:
@@ -37,11 +45,10 @@ def get_rank(secret, guess):
     target_sim = similarity(secret, guess)
 
     better = 0
-    SAMPLE_SIZE = 800  # 👈 control difficulty + speed
+    SAMPLE_SIZE = 800
 
     for w in random.sample(COMMON_WORDS, SAMPLE_SIZE):
         if w in model and similarity(secret, w) > target_sim:
             better += 1
 
-    # Rank is approximate but stable
     return better + 1

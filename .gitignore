@@ -25,6 +25,7 @@ staticfiles/
 *.vec
 *.npy
 *.npz
+models/gensim-data/
 
 # =====================
 # OS files
