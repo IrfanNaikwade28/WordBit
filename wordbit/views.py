@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
-from .nlp import generate_secret_word, build_rankings
+from .nlp import generate_secret_word, get_rank, COMMON_WORDS
+import random
 
 MAX_HINTS = 3
 
 def home(request):
-
     # ==========================
     # HANDLE POST FIRST
     # ==========================
@@ -20,21 +20,19 @@ def home(request):
     # ==========================
     if "secret" not in request.session:
         secret = generate_secret_word()
-        rankings = build_rankings(secret)
 
         request.session["secret"] = secret
-        request.session["rankings"] = rankings
         request.session["guesses"] = {}
         request.session["hints"] = []
         request.session["count"] = 0
         request.session["given_up"] = False
+
 
     # ==========================
     # LOAD STATE
     # ==========================
     secret = request.session["secret"]
     print(secret)
-    RANKINGS = request.session["rankings"]
     guesses = request.session["guesses"]
     hints = request.session["hints"]
     count = request.session["count"]
@@ -50,23 +48,51 @@ def home(request):
 
         if action == "guess" and not given_up:
             word = request.POST.get("word", "").lower().strip()
-            if word in RANKINGS and word not in guesses:
-                count += 1
-                guesses[word] = RANKINGS[word]
-                request.session["count"] = count
-                request.session["guesses"] = guesses
-                if RANKINGS[word] == 1:
-                    message = f"You found the word in {count} guesses!"
+
+            if word not in guesses:
+                rank = get_rank(secret, word)
+
+                if rank:
+                    count += 1
+                    guesses[word] = rank
+                    request.session["count"] = count
+                    request.session["guesses"] = guesses
+
+                    if rank == 1:
+                        message = f"You found the word in {count} guesses!"
 
         elif action == "hint" and not given_up:
             if len(hints) < MAX_HINTS:
-                hint_ranges = [(300, 600), (80, 200), (11, 50),]
+
+                # hint ranges by hint number
+                hint_ranges = [
+                    (50, 100),   # first hint
+                    (20, 50),    # second hint
+                    (8, 20),     # third hint
+                ]
+
                 low, high = hint_ranges[len(hints)]
-                for w, r in sorted(RANKINGS.items(), key=lambda x: x[1]):
-                    if w not in guesses and w not in [h[0] for h in hints] and low <= r <= high:
-                        hints.append((w, r))
+
+                tries = 0
+                MAX_TRIES = 100  # safety limit
+
+                while tries < MAX_TRIES:
+                    hint_word = random.choice(COMMON_WORDS)
+
+                    # avoid duplicates
+                    if hint_word in guesses or hint_word in [h[0] for h in hints]:
+                        tries += 1
+                        continue
+
+                    rank = get_rank(secret, hint_word)
+
+                    if rank and low <= rank <= high:
+                        hints.append((hint_word, rank))
                         request.session["hints"] = hints
                         break
+
+                    tries += 1
+
 
         elif action == "giveup":
             request.session["given_up"] = True
