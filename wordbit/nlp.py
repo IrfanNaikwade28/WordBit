@@ -1,21 +1,10 @@
 import random
-from pathlib import Path
 from scipy.spatial.distance import cosine
-from gensim.models import KeyedVectors
+import gensim.downloader as api
 from wordfreq import top_n_list
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-MODEL_PATH = (
-    BASE_DIR / "models" / "gensim-data" / "glove-wiki-gigaword-50"
-    / "glove-wiki-gigaword-50.txt"
-)
-
 print("🔹 Loading GloVe model at startup...")
-model = KeyedVectors.load_word2vec_format(
-    MODEL_PATH,
-    binary=False
-)
+model = api.load("glove-wiki-gigaword-50")
 print("✅ GloVe model loaded")
 
 COMMON_WORDS = top_n_list("en", 30000)
