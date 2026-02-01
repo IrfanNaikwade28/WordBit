@@ -1,3 +1,4 @@
+# wordbit/nlp.py
 import random
 from pathlib import Path
 from scipy.spatial.distance import cosine
@@ -7,11 +8,8 @@ from wordfreq import top_n_list
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 MODEL_PATH = (
-    BASE_DIR
-    / "models"
-    / "gensim-data"
-    / "glove-wiki-gigaword-50"
-    / "glove-wiki-gigaword-50.txt"
+    BASE_DIR / "models" / "gensim-data" /
+    "glove-wiki-gigaword-50" / "glove-wiki-gigaword-50.txt"
 )
 
 model = None
@@ -20,11 +18,8 @@ COMMON_WORDS = top_n_list("en", 30000)
 def load_model():
     global model
     if model is None:
-        print("Loading GloVe model from local disk...")
-        model = KeyedVectors.load_word2vec_format(
-            MODEL_PATH,
-            binary=False
-        )
+        print("Loading GloVe model (once per worker)...")
+        model = KeyedVectors.load_word2vec_format(MODEL_PATH, binary=False)
         print("Model loaded")
 
 def similarity(w1, w2):
@@ -43,7 +38,6 @@ def get_rank(secret, guess):
         return None
 
     target_sim = similarity(secret, guess)
-
     better = 0
     SAMPLE_SIZE = 800
 
